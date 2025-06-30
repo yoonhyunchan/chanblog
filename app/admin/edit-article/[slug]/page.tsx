@@ -1,29 +1,18 @@
 "use client";
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Layout } from "@/components/layout";
-import ReactMarkdown from "react-markdown";
-import { format } from 'date-fns';
 import ArticleForm, { ArticleFormValues } from "@/components/article-form";
 import { toast } from "@/components/ui/use-toast"
-import { getAllCategories, getArticleBySlug, updateArticle } from "@/lib/api";
+import { getArticleBySlug, updateArticle } from "@/lib/api";
+import { format } from 'date-fns';
 
 export default function EditArticlePage() {
     const router = useRouter();
     const params = useParams();
     const slug = params.slug as string;
-    const [categories, setCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [initialValues, setInitialValues] = useState<ArticleFormValues | undefined>();
-
-
-    useEffect(() => {
-        getAllCategories()
-            .then(data => setCategories(data.map((c: any) => c.slug)));
-    }, []);
 
     useEffect(() => {
         getArticleBySlug(slug)

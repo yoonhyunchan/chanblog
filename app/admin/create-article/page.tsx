@@ -1,19 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Layout } from "@/components/layout";
-import ReactMarkdown from "react-markdown";
-import { format } from 'date-fns';
 import ArticleForm, { ArticleFormValues } from "@/components/article-form";
 import { toast } from "@/components/ui/use-toast"
 import { getAllArticles, createArticle } from "@/lib/api";
+import { format } from 'date-fns';
 
 export default function CreateArticlePage() {
     const router = useRouter();
-    const [categories, setCategories] = useState<string[]>([]);
     const [form, setForm] = useState({
         title: "",
         subtitle: "",
@@ -34,7 +29,7 @@ export default function CreateArticlePage() {
 
     useEffect(() => {
         getAllArticles()
-            .then(data => setCategories(data.map((c: any) => c.slug)));
+        // categories are not used, so this can be removed
     }, []);
 
     // Auto-generate slug from title

@@ -61,9 +61,9 @@
     "next-themes": "^0.4.4",
     "pg": "latest",
     "pg-native": "latest",
-    "react": "^18",
+    "react": "^18.3.1",
     "react-day-picker": "8.10.1",
-    "react-dom": "^18",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.54.1",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
@@ -77,7 +77,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/node": "^22",
+    "@types/node": "^22.15.34",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9.30.0",

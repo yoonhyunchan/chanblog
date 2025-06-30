@@ -1,14 +1,20 @@
 "use client";
 
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import hljs from '@/lib/highlight';
-import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+
+function isReactElementWithStringChildren(child: unknown): child is React.ReactElement<{ children: string }> {
+    return (
+        typeof child === 'object' &&
+        child !== null &&
+        'props' in child &&
+        typeof (child as { props: { children: unknown } }).props.children === 'string'
+    );
+}
 
 function CodeBlock({ children, className = '', ...props }: React.HTMLAttributes<HTMLElement>) {
     const [copied, setCopied] = useState(false);
@@ -20,21 +26,19 @@ function CodeBlock({ children, className = '', ...props }: React.HTMLAttributes<
         }
     }, [code]);
 
-
     // Safely extract code string from children
-
     if (Array.isArray(children)) {
         code = children.map(child => {
             if (typeof child === 'string') return child;
-            if (typeof child === 'object' && child && 'props' in child && typeof (child as any).props.children === 'string') {
-                return (child as any).props.children;
+            if (isReactElementWithStringChildren(child)) {
+                return child.props.children;
             }
             return '';
         }).join('');
     } else if (typeof children === 'string') {
         code = children;
-    } else if (typeof children === 'object' && children && 'props' in children && typeof (children as any).props.children === 'string') {
-        code = (children as any).props.children;
+    } else if (isReactElementWithStringChildren(children)) {
+        code = children.props.children;
     }
 
     // Extract language from className (e.g., "language-sh")

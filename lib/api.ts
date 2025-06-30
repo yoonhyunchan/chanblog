@@ -17,7 +17,6 @@ interface NewCategory {
 }
 interface ArticlePayload {
     slug: string;
-    [key: string]: any;  // 필요한 필드들 추가 가능
 }
 
 // Helper function to get auth headers

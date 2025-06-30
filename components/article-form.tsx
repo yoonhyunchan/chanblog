@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from "react-markdown";
 import { format } from 'date-fns';
-import { useRef } from "react";
 import dynamic from "next/dynamic";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -13,6 +11,7 @@ import hljs from '@/lib/highlight';
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import { getAllCategories } from "@/lib/api";
+import type { Category } from '@/lib/data';
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -39,7 +38,7 @@ export default function ArticleForm({
     onSubmit: (values: ArticleFormValues) => void;
     mode?: "create" | "edit";
 }) {
-    const [categories, setCategories] = useState<any[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [form, setForm] = useState<ArticleFormValues>({
         title: initialValues?.title || "",
         excerpt: initialValues?.excerpt || "",
@@ -53,7 +52,7 @@ export default function ArticleForm({
         authorTitle: initialValues?.authorTitle || "",
         authorAvatar: initialValues?.authorAvatar || "",
     });
-    const [slugTouched, setSlugTouched] = useState(false);
+    const [slugTouched] = useState(false);
     const [excerptTouched, setExcerptTouched] = useState(false);
 
     useEffect(() => {
@@ -88,7 +87,7 @@ export default function ArticleForm({
         }
     }, [form.intro, form.content, excerptTouched]);
 
-    function handleChange(field: keyof ArticleFormValues, value: string) {
+    function handleChange(field: keyof ArticleFormValues, value: string | number) {
         setForm(f => ({ ...f, [field]: value }));
         if (field === "excerpt") setExcerptTouched(true);
     }
@@ -107,15 +106,15 @@ export default function ArticleForm({
         if (Array.isArray(children)) {
             code = children.map(child => {
                 if (typeof child === 'string') return child;
-                if (typeof child === 'object' && child && 'props' in child && typeof (child as any).props.children === 'string') {
-                    return (child as any).props.children;
+                if (isReactElementWithStringChildren(child)) {
+                    return child.props.children;
                 }
                 return '';
             }).join('');
         } else if (typeof children === 'string') {
             code = children;
-        } else if (typeof children === 'object' && children && 'props' in children && typeof (children as any).props.children === 'string') {
-            code = (children as any).props.children;
+        } else if (isReactElementWithStringChildren(children)) {
+            code = children.props.children;
         }
 
         // Extract language from className (e.g., "language-sh")
@@ -170,6 +169,15 @@ export default function ArticleForm({
         );
     }
 
+    function isReactElementWithStringChildren(child: unknown): child is React.ReactElement<{ children: string }> {
+        return (
+            typeof child === 'object' &&
+            child !== null &&
+            'props' in child &&
+            typeof (child as { props: { children: unknown } }).props.children === 'string'
+        );
+    }
+
     return (
         <form className="space-y-7" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
@@ -190,7 +198,7 @@ export default function ArticleForm({
             <div>
                 <label className="block mb-2 font-medium text-gray-700">Category</label>
                 <div className="flex gap-2 flex-wrap">
-                    {categories.map(cat => (
+                    {categories.map((cat: Category) => (
                         <Button
                             key={cat.id}
                             type="button"

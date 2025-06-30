@@ -4,9 +4,6 @@ import { useEffect, useState } from "react"
 import { Layout } from "@/components/layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { X, Plus, Save, Send } from "lucide-react"
 import type { Category } from "@/lib/data";
 import { toast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
@@ -25,13 +22,7 @@ export default function AdminPage() {
     const [tab, setTab] = useState("articles")
     const [articles, setArticles] = useState<Article[]>([])
     const [loadingArticles, setLoadingArticles] = useState(false)
-    const [newArticle, setNewArticle] = useState({
-        title: "",
-        category_id: "",
-        content: "",
-        excerpt: "",
-        status: "draft"
-    })
+
     const router = useRouter()
     // Category management state
     const [categories, setCategories] = useState<Category[]>([])
@@ -149,8 +140,8 @@ export default function AdminPage() {
                                                                     await deleteArticle(article.slug);
                                                                     toast({ title: "Article deleted!" });
                                                                     refreshArticles()
-                                                                } catch (err: any) {
-                                                                    toast({ title: "Error", description: err.message });
+                                                                } catch (err: unknown) {
+                                                                    toast({ title: "Error", description: err as string });
                                                                 }
                                                             }}
                                                         >Delete</Button>
@@ -205,8 +196,8 @@ export default function AdminPage() {
                                                                             setEditingCategory(null)
                                                                             refreshCategories()
                                                                             toast({ title: 'Category updated!', description: '', })
-                                                                        } catch (err: any) {
-                                                                            toast({ title: 'Error', description: err.message })
+                                                                        } catch (err: unknown) {
+                                                                            toast({ title: 'Error', description: err as string })
                                                                         }
                                                                     }}>Save</Button>
                                                                     <Button size="sm" variant="default" className="bg-black text-white hover:bg-black/90" onClick={() => setEditingCategory(null)}>Cancel</Button>
@@ -233,8 +224,8 @@ export default function AdminPage() {
                                                                                             await deleteCategory(cat.slug);
                                                                                             refreshCategories(); // 카테고리 목록 리프레시 함수
                                                                                             toast({ title: "Category deleted!" });
-                                                                                        } catch (err: any) {
-                                                                                            toast({ title: "Error", description: err.message });
+                                                                                        } catch (err: unknown) {
+                                                                                            toast({ title: "Error", description: err as string });
                                                                                         }
                                                                                     }}>Delete</Button>
                                                                                 </AlertDialogAction>
@@ -259,8 +250,8 @@ export default function AdminPage() {
                                                 setNewCategory({ title: "", slug: "", image: "" });
                                                 refreshCategories();
                                                 toast({ title: 'Category added!', description: '', })
-                                            } catch (err: any) {
-                                                toast({ title: 'Error', description: err.message })
+                                            } catch (err: unknown) {
+                                                toast({ title: 'Error', description: err as string })
                                             }
                                         }}>
                                             <Input className="w-32" placeholder="Title" value={newCategory.title} onChange={e => setNewCategory(f => ({ ...f, title: e.target.value }))} required />

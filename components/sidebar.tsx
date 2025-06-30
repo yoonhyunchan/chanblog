@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { X, Home, Monitor, ImageIcon, Utensils, Shirt, LogIn, LogOut, Mail, Lock, UserCog, UserPlus } from "lucide-react"
+import { X, Home, Monitor, ImageIcon, Utensils, Shirt, LogOut, Mail, Lock, UserCog, UserPlus } from "lucide-react"
 import { getAllCategories } from "@/lib/api";
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type { ComponentType } from 'react';
 
-const CATEGORIES_API = process.env.NEXT_PUBLIC_CATEGORIES_API_URL;
 const LOGIN_API = process.env.NEXT_PUBLIC_LOGIN_API_URL;
 
 export function Sidebar() {
@@ -158,7 +158,7 @@ export function Sidebar() {
   };
 
   // Map slugs to icons if you want
-  const iconMap: Record<string, any> = {
+  const iconMap: Record<string, ComponentType<{ size?: number | string; className?: string }>> = {
     it: Monitor,
     exhibition: ImageIcon,
     food: Utensils,

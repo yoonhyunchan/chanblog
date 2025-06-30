@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Layout } from "@/components/layout"
 import { Breadcrumb } from "@/components/breadcrumb"
-import { getCategoryData, getAllCategories, getArticleBySlug, getRelatedArticles } from "@/lib/api"
+import { getCategoryData, getAllCategories, getRelatedArticles } from "@/lib/api"
 import { getArticleData } from "@/lib/articles" // getRelatedArticles
 import { MarkdownViewer } from "@/components/markdown-viewer"
 
