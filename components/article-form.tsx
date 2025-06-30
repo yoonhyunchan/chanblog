@@ -250,7 +250,7 @@ export default function ArticleForm({
                 <label className="block mb-2 font-medium text-gray-700">Content (Markdown supported)</label>
                 <div className="flex gap-6">
                     {/* Editor */}
-                    <div className="flex-1 min-w-0 max-w-md">
+                    <div className="flex-1 min-w-0 max-w-md" data-color-mode="light">
                         <MDEditor
                             value={form.content}
                             onChange={val => handleChange("content", val || "")}
