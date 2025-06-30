@@ -1,67 +1,37 @@
-// Static categories data - no database needed
+// Categories data - now using database
 export interface Category {
-  slug: string
-  title: string
-  description: string
-  image: string
+  id: number;
+  slug: string;
+  title: string;
+  image: string;
 }
 
-// Static categories that don't change often
-export const categories: Category[] = [
-  {
-    slug: "it",
-    title: "IT & Technology",
-    description: "Explore the latest in technology, programming, and digital innovation.",
-    image: "/images/IT.jpeg",
-
-  },
-  {
-    slug: "exhibition",
-    title: "Exhibition & Art",
-    description: "Discover amazing exhibitions, art galleries, and cultural experiences.",
-    image: "/images/Exhibition.JPG",
-  },
-  {
-    slug: "food",
-    title: "Must-Try Places",
-    description: "Find the best restaurants, cafes, and food experiences in the city.",
-    image: "/images/Must-Try.JPG",
-  },
-  {
-    slug: "fashion",
-    title: "Fashion & Style",
-    description: "Latest trends, style guides, and fashion inspiration.",
-    image: "/images/Fashion.jpeg",
-  }
-]
 
 // Article interface for frontend
 export interface Article {
-  slug: string
-  title: string
-  subtitle: string
-  excerpt: string
-  content: string
-  intro: string
-  category: string
-  author: {
-    name: string
-    title: string
-    avatar: string
-  }
-  date: string
-  dateFormatted: string
-  readTime: string
-  featuredImage: string
-  image: string
-  tags: string[]
+  id: number;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  excerpt?: string;
+  intro?: string;
+  content?: string;
+  category_id: number;
+  date?: string;
+  image?: string;
+  tags?: string[];
+  author_name?: string;
+  author_title?: string;
+  author_avatar_path?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-// Functions for categories (static data)
-export async function getAllCategories(): Promise<Category[]> {
-  return categories
-}
-
-export async function getCategoryData(slug: string): Promise<Category | null> {
-  return categories.find((cat) => cat.slug === slug) || null
+export async function getMainCategories(): Promise<Category[]> {
+  return [
+    { id: 1, slug: "it", title: "IT", image: "/images/IT.jpeg" },
+    { id: 2, slug: "exhibition", title: "Exhibition", image: "/images/Exhibition.JPG" },
+    { id: 3, slug: "must-try", title: "Must-Try", image: "/images/Must-Try.JPG" },
+    { id: 4, slug: "fashion", title: "Fashion", image: "/images/Fashion.jpeg" }
+  ]
 }

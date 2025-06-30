@@ -2,9 +2,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { Layout } from "@/components/layout"
 import { Breadcrumb } from "@/components/breadcrumb"
-import { ShareButtons } from "@/components/share-buttons"
-import { getCategoryData } from "@/lib/data"
-import { getArticleData, getRelatedArticles } from "@/lib/articles"
+import { getCategoryData, getAllCategories, getArticleBySlug, getRelatedArticles } from "@/lib/api"
+import { getArticleData } from "@/lib/articles" // getRelatedArticles
+import { MarkdownViewer } from "@/components/markdown-viewer"
 
 interface ArticlePageProps {
   params: Promise<{
@@ -15,13 +15,20 @@ interface ArticlePageProps {
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params
   const article = await getArticleData(slug)
-  const relatedArticles = await getRelatedArticles(slug)
 
   if (!article) {
     return <div>Article not found</div>
   }
+  const relatedArticles = await getRelatedArticles(article.category_id, slug)
 
-  const category = await getCategoryData(article.category)
+  const allCategories = await getAllCategories()
+  const matched = allCategories.find(cat => cat.id === article.category_id)
+  const category = matched ? await getCategoryData(matched.slug) : null
+
+  // Ensure tags is always an array
+  const tagsArray: string[] = Array.isArray(article.tags)
+    ? (article.tags as string[])
+    : (typeof article.tags === 'string' && article.tags ? (article.tags as string).split(",").map((tag: string) => tag.trim()) : []);
 
   return (
     <Layout>
@@ -29,7 +36,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            { label: category?.title || article.category, href: `/category/${article.category}` },
+            { label: category?.title || 'Unknown Category', href: category ? `/category/${category.slug}` : '#' },
             { label: article.title },
           ]}
         />
@@ -40,10 +47,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <header className="mb-12 text-center">
               <div className="mb-4">
                 <Link
-                  href={`/category/${article.category}`}
+                  href={category ? `/category/${category.slug}` : '#'}
                   className="inline-block bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-600 transition-colors no-underline"
                 >
-                  {category?.title || article.category}
+                  {category?.title || 'Unknown Category'}
                 </Link>
               </div>
 
@@ -55,43 +62,47 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 <div className="flex items-center gap-4 mb-4 md:mb-0">
                   <div className="w-12 h-12 rounded-full overflow-hidden">
                     <Image
-                      src={article.author.avatar || "/placeholder.svg?height=50&width=50"}
-                      alt={article.author.name}
+                      src={article.author_avatar_path || "/placeholder.svg?height=50&width=50"}
+                      alt={article.author_name || 'Author'}
                       width={50}
                       height={50}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-900">{article.author.name}</div>
-                    <div className="text-sm text-gray-600">{article.author.title}</div>
+                    <div className="font-semibold text-gray-900">{article.author_name}</div>
+                    <div className="text-sm text-gray-600">{article.author_title}</div>
                   </div>
                 </div>
                 <div className="text-right text-sm text-gray-600">
-                  <time dateTime={article.date}>{article.dateFormatted}</time>
-                  <span className="block mt-1">{article.readTime}</span>
+                  <time dateTime={article.date}>{article.date}</time>
                 </div>
               </div>
             </header>
 
             {/* Featured Image */}
-            <div className="mb-12 rounded-xl overflow-hidden shadow-lg">
-              <Image
-                src={article.featuredImage || "/placeholder.svg?height=400&width=800"}
-                alt={article.title}
-                width={800}
-                height={400}
-                className="w-full h-auto"
-              />
-            </div>
+            {article.image && (
+              <div className="mb-12 flex justify-center">
+                <div className="rounded-xl overflow-hidden shadow-lg max-w-xl w-full h-64">
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    width={800}
+                    height={400}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Article Content */}
             <div className="prose prose-lg max-w-none">
               <div className="text-xl font-medium text-gray-900 mb-8 p-6 bg-slate-50 border-l-4 border-blue-500 rounded-lg">
                 <p>{article.intro}</p>
               </div>
-
-              <div dangerouslySetInnerHTML={{ __html: article.content }} />
+              <div className="mt-8">
+                <MarkdownViewer content={article.content || ''} />
+              </div>
             </div>
 
             {/* Article Footer */}
@@ -100,7 +111,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               <div className="mb-8">
                 <span className="font-semibold text-gray-600 block mb-3">Tags:</span>
                 <div className="flex flex-wrap gap-2">
-                  {article.tags.map((tag) => (
+                  {tagsArray.map((tag: string) => (
                     <span
                       key={tag}
                       className="bg-gray-100 text-gray-600 px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition-colors"
@@ -110,9 +121,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   ))}
                 </div>
               </div>
-
-              {/* Share */}
-              <ShareButtons title={article.title} />
             </footer>
           </article>
 
@@ -138,7 +146,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                     <div className="p-6">
                       <h4 className="text-xl font-semibold mb-3 text-gray-900 leading-tight">{relatedArticle.title}</h4>
                       <p className="text-gray-600 mb-4 text-sm leading-relaxed">{relatedArticle.excerpt}</p>
-                      <span className="text-sm text-gray-400">{relatedArticle.dateFormatted}</span>
+                      <span className="text-sm text-gray-400">{relatedArticle.date}</span>
                     </div>
                   </Link>
                 </article>

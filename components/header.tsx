@@ -1,19 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { Menu, Search, Plane } from "lucide-react"
+import { Menu, Plane } from "lucide-react"
 
 export function Header() {
   const handleMenuClick = () => {
     const event = new CustomEvent("toggleSidebar")
     window.dispatchEvent(event)
-  }
-
-  const handleSearchClick = () => {
-    const searchTerm = prompt("What would you like to search for?")
-    if (searchTerm) {
-      alert(`Searching for: ${searchTerm}`)
-    }
   }
 
   return (
@@ -26,9 +19,7 @@ export function Header() {
         <Plane size={32} />
       </Link>
 
-      <button onClick={handleSearchClick} className="p-2 rounded-md hover:bg-gray-100 transition-colors">
-        <Search size={24} />
-      </button>
+      <div className="w-10" /> {/* Spacer to maintain header layout */}
     </header>
   )
 }

@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Layout } from "@/components/layout"
 import { Breadcrumb } from "@/components/breadcrumb"
-import { getCategoryData } from "@/lib/data"
+import { getCategoryData } from "@/lib/api"
 import { getCategoryPosts } from "@/lib/articles"
 import type { Article } from "@/lib/data"
 
@@ -17,6 +17,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params
   const category = await getCategoryData(slug)
 
+
   if (!category) {
     return (
       <Layout>
@@ -26,7 +27,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             <p className="text-gray-500">The requested category does not exist.</p>
             <Link
               href="/"
-              className="inline-block mt-4 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+              className="inline-block mt-4 bg-black text-white px-6 py-3 rounded-none hover:bg-gray-800 transition-colors"
             >
               Go Home
             </Link>
@@ -41,11 +42,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   let hasError = false
 
   try {
-    posts = await getCategoryPosts(slug)
+    posts = await getCategoryPosts(category.id)
   } catch (error) {
     console.error("Error loading posts:", error)
     hasError = true
   }
+
 
   return (
     <Layout>
@@ -56,17 +58,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <div className="max-w-3xl mx-auto py-8">
             <div className="text-center mb-12">
               <h1 className="text-5xl font-bold mb-4">{category.title}</h1>
-              <p className="text-xl text-gray-500 max-w-2xl mx-auto">{category.description}</p>
+              {/* <p className="text-xl text-gray-500 max-w-2xl mx-auto">{category.description}</p> */}
             </div>
 
             <div className="space-y-8 pb-16">
               {hasError ? (
-                <div className="text-center py-12">
+                <div className="text-center py-12 sm:col-span-1 md:col-span-2">
                   <p className="text-red-500 text-lg mb-4">Unable to load articles at the moment.</p>
                   <p className="text-gray-500">Please check your database connection and try again.</p>
                 </div>
               ) : posts.length === 0 ? (
-                <div className="text-center py-12">
+                <div className="text-center py-12 sm:col-span-1 md:col-span-2">
                   <p className="text-gray-500 text-lg">No articles found in this category.</p>
                 </div>
               ) : (
@@ -94,8 +96,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                           <p className="text-gray-600 mb-4 flex-grow">{post.excerpt}</p>
                         </div>
                         <div className="flex gap-4 text-sm text-gray-400">
-                          <span>{post.dateFormatted}</span>
-                          <span>By {post.author.name}</span>
+                          <span>{post.date}</span>
+                          <span>By {post.author_name}</span>
                         </div>
                       </div>
                     </Link>
