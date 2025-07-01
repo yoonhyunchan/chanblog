@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
-import { deleteCategory, deleteArticle, getAllArticles, getAllCategories, updateCategory, addCategory } from "@/lib/api/article";
-import { deleteCategory, deleteArticle, getAllArticles, getAllCategories, updateCategory, addCategory } from "@/lib/api/category";
+import { deleteArticle, getAllArticles } from "@/lib/api/article";
+import { deleteCategory, getAllCategories, updateCategory, addCategory } from "@/lib/api/category";
 import type { Article } from '@/lib/types/article';
 import type { Category } from '@/lib/types/category';
 
