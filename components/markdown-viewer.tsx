@@ -52,7 +52,7 @@ function CodeBlock({ children, className = '', ...props }: React.HTMLAttributes<
     };
 
     return (
-        <div className="relative my-8 rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-[#23272e]">
+        <div className="relative rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-[#23272e]">
             {/* MacOS/VSCode Toolbar */}
             <div className="flex items-center justify-between px-4 py-2 bg-[#1a1d21] border-b border-gray-800">
                 <div className="flex items-center space-x-2">
@@ -77,7 +77,7 @@ function CodeBlock({ children, className = '', ...props }: React.HTMLAttributes<
             </div>
             <pre
                 className={
-                    "overflow-x-auto p-5 bg-transparent font-mono text-base leading-relaxed " +
+                    "overflow-x-auto p-5 bg-transparent font-mono text-base leading-relaxed mt-0 mb-0" +
                     className
                 }
                 {...props}

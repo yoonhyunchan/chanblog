@@ -2,9 +2,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { Layout } from "@/components/layout"
 import { Breadcrumb } from "@/components/breadcrumb"
-import { getCategoryData } from "@/lib/api"
-import { getCategoryPosts } from "@/lib/articles"
-import type { Article } from "@/lib/data"
+import { getCategoryData } from "@/lib/api/category"
+import { getArticlesByCategory } from "@/lib/api/article"
+import type { Article } from '@/lib/types/article';
 
 
 interface CategoryPageProps {
@@ -42,7 +42,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   let hasError = false
 
   try {
-    posts = await getCategoryPosts(category.id)
+    posts = await getArticlesByCategory(category.id)
   } catch (error) {
     console.error("Error loading posts:", error)
     hasError = true
@@ -81,13 +81,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                       href={`/article/${post.slug}`}
                       className="grid md:grid-cols-[300px_1fr] gap-6 p-6 text-inherit no-underline"
                     >
-                      <div className="rounded-md overflow-hidden">
+                      <div className="rounded-md overflow-hidden w-[300px] h-[200px]">
                         <Image
                           src={post.image || "/placeholder.svg"}
                           alt={post.title}
-                          width={300}
                           height={200}
-                          className="w-full h-full object-cover"
+                          width={300}
+                          className="w-full h-full object-contain"
                         />
                       </div>
                       <div className="flex flex-col justify-between">

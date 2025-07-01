@@ -2,8 +2,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { Layout } from "@/components/layout"
 import { Breadcrumb } from "@/components/breadcrumb"
-import { getCategoryData, getAllCategories, getRelatedArticles } from "@/lib/api"
-import { getArticleData } from "@/lib/articles" // getRelatedArticles
+import { getRelatedArticles, getArticleBySlug } from "@/lib/api/article"
+import { getCategoryData, getAllCategories } from "@/lib/api/category"
 import { MarkdownViewer } from "@/components/markdown-viewer"
 
 interface ArticlePageProps {
@@ -14,7 +14,7 @@ interface ArticlePageProps {
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params
-  const article = await getArticleData(slug)
+  const article = await getArticleBySlug(slug)
 
   if (!article) {
     return <div>Article not found</div>
@@ -89,14 +89,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                     alt={article.title}
                     width={800}
                     height={400}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               </div>
             )}
 
             {/* Article Content */}
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none prose-pre:bg-transparent prose-pre:p-0 prose-pre:shadow-none prose-pre:border-0">
               <div className="text-xl font-medium text-gray-900 mb-8 p-6 bg-slate-50 border-l-4 border-blue-500 rounded-lg">
                 <p>{article.intro}</p>
               </div>
@@ -140,7 +140,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                         alt={relatedArticle.title}
                         width={400}
                         height={200}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
                       />
                     </div>
                     <div className="p-6">

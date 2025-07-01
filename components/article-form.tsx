@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ReactMarkdown from "react-markdown";
@@ -10,8 +10,10 @@ import rehypeRaw from "rehype-raw";
 import hljs from '@/lib/highlight';
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
-import { getAllCategories } from "@/lib/api";
-import type { Category } from '@/lib/data';
+import { getAllCategories } from "@/lib/api/category";
+import { uploadImage } from "@/lib/api/image";
+import type { Category } from '@/lib/types/category';
+import { commands, ICommand, TextState, TextAreaTextApi } from "@uiw/react-md-editor";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -27,6 +29,38 @@ export type ArticleFormValues = {
     authorName: string;
     authorTitle: string;
     authorAvatar: string;
+};
+
+// Custom image upload command for MDEditor
+const imageUploadCommand: ICommand = {
+    name: "imageUpload",
+    keyCommand: "imageUpload",
+    buttonProps: { "aria-label": "Upload Image" },
+    icon: (
+        <svg width="12" height="12" viewBox="0 0 20 20">
+            <path fill="currentColor" d="M4 16l4-4 4 4 4-4v6H0v-6l4 4zM4 4h12v2H4V4zm0 4h12v2H4V8z" />
+        </svg>
+    ),
+    execute: async (state: TextState, api: TextAreaTextApi) => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = async () => {
+            if (input.files && input.files[0]) {
+                try {
+                    const url = await uploadImage(input.files[0]);
+                    if (url) {
+                        api.replaceSelection(`![image](${url})`);
+                    } else {
+                        alert("Image upload failed: No URL returned.");
+                    }
+                } catch (err) {
+                    alert("Image upload failed.");
+                }
+            }
+        };
+        input.click();
+    }
 };
 
 export default function ArticleForm({
@@ -54,6 +88,8 @@ export default function ArticleForm({
     });
     const [slugTouched] = useState(false);
     const [excerptTouched, setExcerptTouched] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         getAllCategories()
@@ -234,12 +270,54 @@ export default function ArticleForm({
                     onChange={e => handleChange("authorAvatar", e.target.value)}
                 />
             </div>
-            <Input
-                placeholder="Image URL"
-                className="placeholder:text-gray-400 border-0 border-b border-gray-200 focus:border-black rounded-none bg-transparent px-0"
-                value={form.image}
-                onChange={e => handleChange("image", e.target.value)}
-            />
+            <div>
+                <label className="block mb-2 font-medium text-gray-700">Article Image</label>
+                <div className="flex items-center gap-4">
+                    <Button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        variant="black"
+                        className="px-4 py-2 rounded shadow"
+                    >
+                        {uploading ? "Uploading..." : form.image ? "Change Image" : "Upload Image"}
+                    </Button>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                            if (e.target.files && e.target.files[0]) {
+                                setUploading(true);
+                                try {
+                                    const url = await uploadImage(e.target.files[0]);
+                                    handleChange("image", url);
+                                } catch {
+                                    alert("Image upload failed.");
+                                }
+                                setUploading(false);
+                            }
+                        }}
+                    />
+                    {form.image && (
+                        <div className="relative w-16 h-16">
+                            <img
+                                src={form.image}
+                                alt="Article Image"
+                                className="w-16 h-16 object-cover rounded shadow border"
+                            />
+                            <Button
+                                type="button"
+                                onClick={() => handleChange("image", "")}
+                                variant="black"
+                                className="absolute top-0 right-0 rounded-full p-0.5 text-xs leading-none w-5 h-5 flex items-center justify-center"
+                            >
+                                ×
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            </div>
             <Input
                 placeholder="Tags (comma separated)"
                 className="placeholder:text-gray-400 border-0 border-b border-gray-200 focus:border-black rounded-none bg-transparent px-0"
@@ -256,6 +334,14 @@ export default function ArticleForm({
                             onChange={val => handleChange("content", val || "")}
                             height={500}
                             preview="edit"
+                            commands={[
+                                imageUploadCommand,
+                                commands.bold,
+                                commands.link,
+                                commands.code,
+
+                                // ...(commands?.getCommands ? commands.getCommands() : [])
+                            ]}
                             previewOptions={{
                                 remarkPlugins: [remarkGfm],
                                 rehypePlugins: [

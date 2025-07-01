@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout";
 import ArticleForm, { ArticleFormValues } from "@/components/article-form";
 import { toast } from "@/components/ui/use-toast"
-import { getAllArticles, createArticle } from "@/lib/api";
+import { getAllArticles, createArticle } from "@/lib/api/article";
 import { format } from 'date-fns';
 
 export default function CreateArticlePage() {

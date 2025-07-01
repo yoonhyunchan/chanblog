@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { X, Home, Monitor, ImageIcon, Utensils, Shirt, LogOut, Mail, Lock, UserCog, UserPlus } from "lucide-react"
-import { getAllCategories } from "@/lib/api";
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -12,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ComponentType } from 'react';
+import { getAllCategories } from "@/lib/api/category";
 
 const LOGIN_API = process.env.NEXT_PUBLIC_LOGIN_API_URL;
 

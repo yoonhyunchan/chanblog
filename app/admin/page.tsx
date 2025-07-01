@@ -4,13 +4,13 @@ import { useEffect, useState } from "react"
 import { Layout } from "@/components/layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type { Category } from "@/lib/data";
 import { toast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
-
-import { deleteCategory, deleteArticle, getAllArticles, getAllCategories, updateCategory, addCategory } from "@/lib/api";
-import type { Article } from "@/lib/data"
+import { deleteCategory, deleteArticle, getAllArticles, getAllCategories, updateCategory, addCategory } from "@/lib/api/article";
+import { deleteCategory, deleteArticle, getAllArticles, getAllCategories, updateCategory, addCategory } from "@/lib/api/category";
+import type { Article } from '@/lib/types/article';
+import type { Category } from '@/lib/types/category';
 
 const TABS = [
     { key: "articles", label: "Articles" },
