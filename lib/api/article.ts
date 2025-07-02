@@ -1,5 +1,6 @@
 import type { Article, ArticlePayload } from "@/lib/types/article";
 import type { ArticleFormValues } from "@/components/article-form";
+import { getAuthHeaders } from "@/lib/api/login";
 
 const ARTICLES_API = process.env.NEXT_PUBLIC_ARTICLES_API_URL
 

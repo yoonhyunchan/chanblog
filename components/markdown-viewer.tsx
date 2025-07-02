@@ -5,28 +5,14 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import hljs from '@/lib/highlight';
-import { useState, useRef, useEffect } from 'react';
-
-function isReactElementWithStringChildren(child: unknown): child is React.ReactElement<{ children: string }> {
-    return (
-        typeof child === 'object' &&
-        child !== null &&
-        'props' in child &&
-        typeof (child as { props: { children: unknown } }).props.children === 'string'
-    );
-}
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
 
 function CodeBlock({ children, className = '', ...props }: React.HTMLAttributes<HTMLElement>) {
     const [copied, setCopied] = useState(false);
-    const codeRef = useRef<HTMLElement>(null);
-    let code = '';
-    useEffect(() => {
-        if (codeRef.current) {
-            hljs.highlightElement(codeRef.current);
-        }
-    }, [code]);
 
     // Safely extract code string from children
+    let code = '';
     if (Array.isArray(children)) {
         code = children.map(child => {
             if (typeof child === 'string') return child;
@@ -42,8 +28,17 @@ function CodeBlock({ children, className = '', ...props }: React.HTMLAttributes<
     }
 
     // Extract language from className (e.g., "language-sh")
+    let lang = '';
+    let highlighted = '';
     const match = /language-(\w+)/.exec(className || '');
-    const lang = match ? match[1] : '';
+    if (match && hljs.getLanguage(match[1])) {
+        lang = match[1];
+        highlighted = hljs.highlight(code, { language: lang }).value;
+    } else {
+        const auto = hljs.highlightAuto(code);
+        lang = auto.language || '';
+        highlighted = auto.value;
+    }
 
     const handleCopy = () => {
         navigator.clipboard.writeText(code);
@@ -66,41 +61,47 @@ function CodeBlock({ children, className = '', ...props }: React.HTMLAttributes<
                             {lang}
                         </span>
                     )}
-                    <button
+                    <Button
                         type="button"
+                        size="sm"
+                        variant="outline"
                         className="text-xs text-gray-300 bg-gray-800 px-2 py-1 rounded hover:bg-gray-700 transition"
                         onClick={handleCopy}
                     >
                         {copied ? "Copied!" : "Copy"}
-                    </button>
+                    </Button>
                 </div>
             </div>
-            <pre
-                className={
-                    "overflow-x-auto p-5 bg-transparent font-mono text-base leading-relaxed mt-0 mb-0" +
-                    className
-                }
-                {...props}
-            >
-                <code ref={codeRef} className={`hljs ${className}`}>{code}</code>
+            <pre className={`overflow-x-auto p-5 font-mono text-base leading-relaxed my-0 ${className}`} {...props}>
+                <code className={`hljs mb-8 ${className}`} dangerouslySetInnerHTML={{ __html: highlighted }} />
             </pre>
         </div>
+    );
+}
+function isReactElementWithStringChildren(child: unknown): child is React.ReactElement<{ children: string }> {
+    return (
+        typeof child === 'object' &&
+        child !== null &&
+        'props' in child &&
+        typeof (child as { props: { children: unknown } }).props.children === 'string'
     );
 }
 
 export function MarkdownViewer({ content }: { content: string }) {
     return (
-        <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[
-                rehypeRaw,
-                [rehypeHighlight, { detect: false, ignoreMissing: true, hljs }]
-            ]}
-            components={{
-                code: CodeBlock
-            }}
-        >
-            {content}
-        </ReactMarkdown>
+        <div className="prose max-w-none prose-neutral prose-lg font-sans prose-pre:bg-transparent">
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[
+                    rehypeRaw,
+                    [rehypeHighlight, { detect: false, ignoreMissing: true, hljs }]
+                ]}
+                components={{
+                    code: CodeBlock
+                }}
+            >
+                {content}
+            </ReactMarkdown>
+        </div>
     );
 } 

@@ -1,3 +1,4 @@
+import { getAuthHeaders } from "@/lib/api/login";
 // Categories
 import type { Category, UpdateCategoryParams, NewCategory } from "@/lib/types/category"
 

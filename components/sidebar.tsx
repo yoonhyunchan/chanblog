@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { X, Home, Monitor, ImageIcon, Utensils, Shirt, LogOut, Mail, Lock, UserCog, UserPlus } from "lucide-react"
@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ComponentType } from 'react';
 import { getAllCategories } from "@/lib/api/category";
+import { uploadImage } from "@/lib/api/image";
 
 const LOGIN_API = process.env.NEXT_PUBLIC_LOGIN_API_URL;
 
@@ -31,8 +32,13 @@ export function Sidebar() {
   const [registerForm, setRegisterForm] = useState({
     email: "",
     password: "",
+    name: "",
+    title: "",
+    avatar_path: "",
     confirmPassword: ""
   })
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -100,6 +106,8 @@ export function Sidebar() {
     }
   };
 
+
+
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setAuthError("")
@@ -121,6 +129,9 @@ export function Sidebar() {
         body: JSON.stringify({
           email: registerForm.email,
           password: registerForm.password,
+          name: registerForm.name,
+          title: registerForm.password,
+          avatar_path: registerForm.avatar_path,
         }),
       });
 
@@ -132,7 +143,9 @@ export function Sidebar() {
         document.cookie = `authToken=${data.access_token}; path=/; max-age=2592000`;
         setIsAuthenticated(true);
         setShowAuthModal(false);
-        setRegisterForm({ email: "", password: "", confirmPassword: "" });
+        setRegisterForm({
+          email: "", password: "", name: "", title: "", avatar_path: "", confirmPassword: ""
+        });
         router.refresh();
       } else {
         setAuthError(data.message || data.error || "Registration failed. Please try again.");
@@ -351,6 +364,7 @@ export function Sidebar() {
                     />
                   </div>
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="register-confirm-password">Confirm Password</Label>
                   <div className="relative">
@@ -366,6 +380,92 @@ export function Sidebar() {
                     />
                   </div>
                 </div>
+
+
+                <div className="flex gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-name">Name</Label>
+                    <div className="relative">
+                      {/* <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" /> */}
+                      <Input
+                        id="register-name"
+                        type="name"
+                        placeholder="Enter your name"
+                        value={registerForm.name}
+                        onChange={(e) => setRegisterForm(prev => ({ ...prev, name: e.target.value }))}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-title">Title</Label>
+                    <Input
+                      id="register-title"
+                      type="title"
+                      placeholder="Enter your title"
+                      value={registerForm.title}
+                      onChange={(e) => setRegisterForm(prev => ({ ...prev, title: e.target.value }))}
+                      required
+                    />
+                  </div>
+                </div>
+
+
+                <div>
+                  <label className="block mb-2 font-medium text-gray-700">Avarar Image</label>
+                  <div className="flex items-center gap-4">
+                    <Button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      variant="black"
+                      className="px-4 py-2 rounded shadow"
+                    >
+                      {uploading ? "Uploading..." : registerForm.avatar_path ? "Change Image" : "Upload Image"}
+                    </Button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setUploading(true);
+                          try {
+                            const url = await uploadImage(e.target.files[0]);
+                            setRegisterForm(prev => ({ ...prev, avatar_path: url }))
+                          } catch {
+                            alert("Image upload failed.");
+                          }
+                          setUploading(false);
+                        }
+                      }}
+                    />
+                    {registerForm.avatar_path ? (
+                      <div className="relative w-16 h-16">
+                        <img
+                          src={registerForm.avatar_path}
+                          alt="Article Image"
+                          className="w-16 h-16 object-cover rounded shadow border rounded-xl"
+                        />
+                        <Button
+                          type="button"
+                          onClick={() => setRegisterForm(prev => ({ ...prev, avatar_path: "" }))}
+                          variant="black"
+                          className="absolute top-0 right-0 rounded-full p-0.5 text-xs leading-none w-5 h-5 flex items-center justify-center"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-100 border rounded-xl" />
+                    )
+                    }
+                  </div>
+                </div>
+
+
+
+
                 <DialogFooter>
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? "Registering..." : "Register"}

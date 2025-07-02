@@ -7,6 +7,7 @@ import { toast } from "@/components/ui/use-toast"
 import { getArticleBySlug, updateArticle } from "@/lib/api/article";
 import { format } from 'date-fns';
 
+
 export default function EditArticlePage() {
     const router = useRouter();
     const params = useParams();
@@ -30,9 +31,9 @@ export default function EditArticlePage() {
                     date: data.date || format(new Date(), 'yyyy-MM-dd'),
                     image: data.image || "",
                     tags: Array.isArray(data.tags) ? data.tags.join(", ") : (data.tags || ""),
-                    authorName: data.author_name || "",
-                    authorTitle: data.author_title || "",
-                    authorAvatar: data.author_avatar_path || "",
+                    author_name: data.author_name || "",
+                    author_title: data.author_title || "",
+                    author_avatar_path: data.author_avatar_path || "",
                 });
             })
             .finally(() => setLoading(false));

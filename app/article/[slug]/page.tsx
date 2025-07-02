@@ -27,8 +27,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   // Ensure tags is always an array
   const tagsArray: string[] = Array.isArray(article.tags)
-    ? (article.tags as string[])
-    : (typeof article.tags === 'string' && article.tags ? (article.tags as string).split(",").map((tag: string) => tag.trim()) : []);
+    ? [...new Set(article.tags as string[])]
+    : (typeof article.tags === 'string' && article.tags
+      ? [...new Set((article.tags as string).split(",").map(tag => tag.trim()))]
+      : []);
 
   return (
     <Layout>
