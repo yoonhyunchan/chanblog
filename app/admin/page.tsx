@@ -38,7 +38,6 @@ export default function AdminPage() {
     const [editingCategory, setEditingCategory] = useState<Category | null>(null)
     const [categoryForm, setCategoryForm] = useState({ title: "", slug: "", image: "" })
     const categoryMap = Object.fromEntries(categories.map(cat => [cat.id, cat.title]));
-    const [editingUserData, setEditingUserData] = useState<User | null>(null)
 
     // Users
     const [loadingUserData, setLoadingUserData] = useState(false);
