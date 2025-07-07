@@ -1,4 +1,4 @@
-import type { User } from "@/lib/types/login";
+import type { User, LoginPayload, LoginResponse, RegisterPayload } from "@/lib/types/login";
 const LOGIN_API = process.env.NEXT_PUBLIC_LOGIN_API_URL
 
 export function getAuthHeaders(): Record<string, string> {
@@ -12,6 +12,25 @@ export function getAuthHeaders(): Record<string, string> {
     return {
         'Authorization': `${tokenType} ${token}`
     };
+}
+
+export async function loginUser({ email, password }: LoginPayload): Promise<LoginResponse> {
+    const response = await fetch(`${LOGIN_API}/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || data.error || 'Login failed');
+    }
+
+    return data;
 }
 
 export async function fetchUserData(): Promise<User | null> {
@@ -36,6 +55,24 @@ export async function fetchUserData(): Promise<User | null> {
 
     const data = await response.json();
     return data as User;
+}
+export async function registerUser(payload: RegisterPayload): Promise<LoginResponse> {
+    const response = await fetch(`${LOGIN_API}/register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || data.error || 'Registration failed');
+    }
+
+    return data;
 }
 
 export async function updateUserData(updatedData: Partial<User>): Promise<User> {

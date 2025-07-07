@@ -13,6 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ComponentType } from 'react';
 import { getAllCategories } from "@/lib/api/category";
 import { uploadImage } from "@/lib/api/image";
+import { loginUser, registerUser } from '@/lib/api/login'; // 정확한 경로로 수정
+
 
 const LOGIN_API = process.env.NEXT_PUBLIC_LOGIN_API_URL;
 
@@ -68,39 +70,27 @@ export function Sidebar() {
   }, [isOpen])
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setAuthError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setAuthError('');
+    setIsLoading(true);
 
     try {
-      const response = await fetch(`${LOGIN_API}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          email: loginForm.email,
-          password: loginForm.password,
-        }),
+      const data = await loginUser({
+        email: loginForm.email,
+        password: loginForm.password,
       });
 
-      const data = await response.json();
+      localStorage.setItem('authToken', data.access_token);
+      localStorage.setItem('tokenType', data.token_type);
+      document.cookie = `authToken=${data.access_token}; path=/; max-age=2592000`;
 
-      if (response.ok && data.access_token) {
-        localStorage.setItem('authToken', data.access_token);
-        localStorage.setItem('tokenType', data.token_type);
-        document.cookie = `authToken=${data.access_token}; path=/; max-age=2592000`;
-        setIsAuthenticated(true);
-        setShowAuthModal(false);
-        setLoginForm({ email: "", password: "" });
-        router.refresh();
-      } else {
-        setAuthError(data.message || data.error || "Login failed. Please try again.");
-      }
-    } catch (error) {
+      setIsAuthenticated(true);
+      setShowAuthModal(false);
+      setLoginForm({ email: '', password: '' });
+      router.refresh();
+    } catch (error: any) {
       console.error('Login error:', error);
-      setAuthError("An error occurred. Please try again.");
+      setAuthError(error.message || 'An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -109,50 +99,43 @@ export function Sidebar() {
 
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setAuthError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setAuthError('');
+    setIsLoading(true);
 
     if (registerForm.password !== registerForm.confirmPassword) {
-      setAuthError("Passwords do not match");
+      setAuthError('Passwords do not match');
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch(`${LOGIN_API}/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          email: registerForm.email,
-          password: registerForm.password,
-          name: registerForm.name,
-          title: registerForm.password,
-          avatar_path: registerForm.avatar_path,
-        }),
+      const data = await registerUser({
+        email: registerForm.email,
+        password: registerForm.password,
+        name: registerForm.name,
+        title: registerForm.title,
+        avatar_path: registerForm.avatar_path,
       });
 
-      const data = await response.json();
+      localStorage.setItem('authToken', data.access_token);
+      localStorage.setItem('tokenType', data.token_type);
+      document.cookie = `authToken=${data.access_token}; path=/; max-age=2592000`;
 
-      if (response.ok && data.access_token) {
-        localStorage.setItem('authToken', data.access_token);
-        localStorage.setItem('tokenType', data.token_type);
-        document.cookie = `authToken=${data.access_token}; path=/; max-age=2592000`;
-        setIsAuthenticated(true);
-        setShowAuthModal(false);
-        setRegisterForm({
-          email: "", password: "", name: "", title: "", avatar_path: "", confirmPassword: ""
-        });
-        router.refresh();
-      } else {
-        setAuthError(data.message || data.error || "Registration failed. Please try again.");
-      }
-    } catch (error) {
+      setIsAuthenticated(true);
+      setShowAuthModal(false);
+      setRegisterForm({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        name: '',
+        title: '',
+        avatar_path: '',
+      });
+      router.refresh();
+    } catch (error: any) {
       console.error('Registration error:', error);
-      setAuthError("An error occurred. Please try again.");
+      setAuthError(error.message || 'An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
