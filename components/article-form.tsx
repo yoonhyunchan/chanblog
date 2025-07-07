@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import ReactMarkdown from "react-markdown";
 import { format } from 'date-fns';
 import dynamic from "next/dynamic";
 import remarkGfm from "remark-gfm";
@@ -16,6 +15,8 @@ import type { Category } from '@/lib/types/category';
 import { commands, ICommand, TextState, TextAreaTextApi } from "@uiw/react-md-editor";
 import { MarkdownViewer } from "@/components/markdown-viewer"
 import { fetchUserData } from "@/lib/api/login";
+import Image from "next/image";
+
 
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
@@ -57,7 +58,7 @@ const imageUploadCommand: ICommand = {
                     } else {
                         alert("Image upload failed: No URL returned.");
                     }
-                } catch (err) {
+                } catch {
                     alert("Image upload failed.");
                 }
             }
@@ -225,7 +226,7 @@ export default function ArticleForm({
                     />
                     {form.image ? (
                         <div className="relative w-16 h-16">
-                            <img
+                            <Image
                                 src={form.image}
                                 alt="Article Image"
                                 className="w-16 h-16 object-cover rounded shadow border rounded-xl"

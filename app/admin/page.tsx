@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
 import { deleteArticle, getAllArticles } from "@/lib/api/article";
 import { deleteCategory, getAllCategories, updateCategory, addCategory } from "@/lib/api/category";
 import type { Article } from '@/lib/types/article';
@@ -16,6 +15,8 @@ import { fetchUserData, updateUserData } from "@/lib/api/login";
 import { User } from "@/lib/types/login";
 import { Pencil, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import Image from "next/image";
+
 
 const TABS = [
     { key: "articles", label: "Articles" },
@@ -40,7 +41,6 @@ export default function AdminPage() {
     const categoryMap = Object.fromEntries(categories.map(cat => [cat.id, cat.title]));
 
     // Users
-    const [loadingUserData, setLoadingUserData] = useState(false);
     const [userData, setUserData] = useState<User | null>(null);
 
     // User profile form state
@@ -92,20 +92,16 @@ export default function AdminPage() {
 
     // Users
     useEffect(() => {
-        setLoadingUserData(true);
         fetchUserData()
             .then(data => {
                 setUserData(data);
             })
             .catch(console.error)
-            .finally(() => setLoadingUserData(false));
     }, []);
 
     function refreshUserData() {
-        setLoadingUserData(true)
         fetchUserData()
             .then(data => setUserData(data))
-            .finally(() => setLoadingUserData(false))
     }
 
 
@@ -256,7 +252,7 @@ export default function AdminPage() {
                                                             />
                                                         </label>
                                                         {newCategory.image ? (
-                                                            <img src={newCategory.image} alt="Category" className="w-12 h-12 object-cover rounded-full border shadow" />
+                                                            <Image src={newCategory.image} alt="Category" className="w-12 h-12 object-cover rounded-full border shadow" />
                                                         ) : <div className="w-12 h-12 object-cover rounded-full border shadow" />}
 
                                                     </div>
@@ -291,7 +287,7 @@ export default function AdminPage() {
                                                             />
                                                         </label>
                                                         {categoryForm.image && (
-                                                            <img src={categoryForm.image} alt="Category" className="w-20 h-20 object-cover rounded-full border-2 border-gray-400 mb-3" />
+                                                            <Image src={categoryForm.image} alt="Category" className="w-20 h-20 object-cover rounded-full border-2 border-gray-400 mb-3" />
                                                         )}
                                                         <Input
                                                             value={categoryForm.title}
@@ -331,7 +327,7 @@ export default function AdminPage() {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <img src={cat.image} alt={cat.title} className="w-20 h-20 object-cover rounded-full border-2 border-gray-400 mb-3" />
+                                                        <Image src={cat.image} alt={cat.title} className="w-20 h-20 object-cover rounded-full border-2 border-gray-400 mb-3" />
                                                         <h3 className="text-lg font-bold mb-1 truncate">{cat.title}</h3>
                                                         <div className="flex gap-2 mt-2">
                                                             <Button size="sm" className="bg-blue-700 text-white flex items-center gap-1 rounded" onClick={() => { setEditingCategory(cat); setCategoryForm({ title: cat.title, slug: cat.slug, image: cat.image }); }}>
@@ -364,7 +360,7 @@ export default function AdminPage() {
                                 <div className="relative max-w-md w-full bg-white rounded-xl shadow-lg overflow-hidden">
                                     <div className="h-24 bg-black"></div>
                                     <div className="flex flex-col items-center -mt-12 pb-6">
-                                        <img
+                                        <Image
                                             src={isEditingUser && userForm?.avatar_path ? userForm.avatar_path : userData?.avatar_path || '/placeholder-user.jpg'}
                                             alt="Avatar"
                                             className="w-24 h-24 rounded-full border-4 border-gray-300 shadow-lg object-cover transition-transform hover:scale-105 bg-gray-100"

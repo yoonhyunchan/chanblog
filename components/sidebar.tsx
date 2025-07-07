@@ -13,10 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ComponentType } from 'react';
 import { getAllCategories } from "@/lib/api/category";
 import { uploadImage } from "@/lib/api/image";
-import { loginUser, registerUser } from '@/lib/api/login'; // 정확한 경로로 수정
+import { loginUser, registerUser } from '@/lib/api/login';
+import Image from "next/image";
 
-
-const LOGIN_API = process.env.NEXT_PUBLIC_LOGIN_API_URL;
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -88,9 +87,9 @@ export function Sidebar() {
       setShowAuthModal(false);
       setLoginForm({ email: '', password: '' });
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
-      setAuthError(error.message || 'An error occurred. Please try again.');
+      setAuthError(error instanceof Error ? error.message : 'An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -133,9 +132,9 @@ export function Sidebar() {
         avatar_path: '',
       });
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration error:', error);
-      setAuthError(error.message || 'An error occurred. Please try again.');
+      setAuthError(error instanceof Error ? error.message : 'An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -425,7 +424,7 @@ export function Sidebar() {
                     />
                     {registerForm.avatar_path ? (
                       <div className="relative w-16 h-16">
-                        <img
+                        <Image
                           src={registerForm.avatar_path}
                           alt="Article Image"
                           className="w-16 h-16 object-cover rounded shadow border rounded-xl"
