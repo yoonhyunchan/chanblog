@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: category
-        image: harbor.chanandy.internal/chanproject/frontend:latest
+        image: harbor.chanandy.internal/frontend/frontend:latest
         ports:
         - containerPort: 3000

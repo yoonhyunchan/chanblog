@@ -11,7 +11,7 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:055332451319:certificate/44c77037-3a74-436a-88e9-ff4f8ee96595
     alb.ingress.kubernetes.io/target-type: instance
     alb.ingress.kubernetes.io/backend-protocol: HTTP
-    alb.ingress.kubernetes.io/group.name: my-shared-alb
+    alb.ingress.kubernetes.io/group.name: frontend-alb
     alb.ingress.kubernetes.io/group.order: "1"   # (선택) ALB rule 적용 우선순위
     external-dns.alpha.kubernetes.io/hostname: www.chanandy.store
 spec:
