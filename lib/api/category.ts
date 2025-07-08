@@ -5,7 +5,7 @@ import type { Category, UpdateCategoryParams, NewCategory } from "@/lib/types/ca
 const CATEGORIES_API = process.env.NEXT_PUBLIC_CATEGORIES_API_URL
 export async function getCategoryData(slug: string): Promise<Category | null> {
     try {
-        const response = await fetch(`${CATEGORIES_API}/api/categories/${slug}`)
+        const response = await fetch(`${CATEGORIES_API}/categories/${slug}`)
         if (!response.ok) {
             throw new Error(`Failed to fetch category: ${response.statusText}`)
         }
@@ -19,7 +19,7 @@ export async function getCategoryData(slug: string): Promise<Category | null> {
 
 export async function getAllCategories(): Promise<Category[]> {
     try {
-        const response = await fetch(`${CATEGORIES_API}/api/categories`)
+        const response = await fetch(`${CATEGORIES_API}/categories`)
         if (!response.ok) {
             throw new Error(`Failed to fetch categories: ${response.statusText}`)
         }
@@ -43,7 +43,7 @@ export async function updateCategory({ slug, updates }: UpdateCategoryParams): P
         //   ...getAuthHeaders?.() // 인증 헤더 함수가 있다면
     }
 
-    const response = await fetch(`${CATEGORIES_API}/api/categories`, {
+    const response = await fetch(`${CATEGORIES_API}/categories`, {
         method: "PATCH",
         headers,
         body: JSON.stringify({ slug, updates })
@@ -61,7 +61,7 @@ export async function addCategory(newCategory: NewCategory): Promise<void> {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '');
 
-    const response = await fetch(`${CATEGORIES_API}/api/categories`, {
+    const response = await fetch(`${CATEGORIES_API}/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -83,7 +83,7 @@ export async function deleteCategory(slug: string): Promise<void> {
         ...getAuthHeaders()
     };
 
-    const response = await fetch(`${CATEGORIES_API}/api/categories`, {
+    const response = await fetch(`${CATEGORIES_API}/categories`, {
         method: "DELETE",
         headers,
         body: JSON.stringify({ slug }),

@@ -3,7 +3,7 @@ const IMAGE_API = process.env.NEXT_PUBLIC_IMAGE_API_URL
 export async function uploadImage(file: File): Promise<string> {
     const formData = new FormData();
     formData.append("file", file);
-    const response = await fetch(`${IMAGE_API}/api/upload`, {
+    const response = await fetch(`${IMAGE_API}/images/upload`, {
         method: "POST",
         body: formData,
     });

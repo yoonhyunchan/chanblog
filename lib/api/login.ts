@@ -15,7 +15,7 @@ export function getAuthHeaders(): Record<string, string> {
 }
 
 export async function loginUser({ email, password }: LoginPayload): Promise<LoginResponse> {
-    const response = await fetch(`${LOGIN_API}/login`, {
+    const response = await fetch(`${LOGIN_API}/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export async function fetchUserData(): Promise<User | null> {
         throw new Error('No authorization token found');
     }
 
-    const response = await fetch(`${LOGIN_API}/user_data`, {
+    const response = await fetch(`${LOGIN_API}/auth/user_data`, {
         method: 'GET',
         headers,
     });
@@ -57,7 +57,7 @@ export async function fetchUserData(): Promise<User | null> {
     return data as User;
 }
 export async function registerUser(payload: RegisterPayload): Promise<LoginResponse> {
-    const response = await fetch(`${LOGIN_API}/register`, {
+    const response = await fetch(`${LOGIN_API}/auth/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export async function updateUserData(updatedData: Partial<User>): Promise<User> 
         throw new Error('No authorization token found');
     }
 
-    const response = await fetch(`${LOGIN_API}/user_data`, {
+    const response = await fetch(`${LOGIN_API}/auth/user_data`, {
         method: 'PUT', // or 'PATCH' depending on API spec
         headers,
         body: JSON.stringify(updatedData),

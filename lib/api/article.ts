@@ -7,7 +7,7 @@ const ARTICLES_API = process.env.NEXT_PUBLIC_ARTICLES_API_URL
 
 export async function getAllArticles(): Promise<Article[]> {
     try {
-        const response = await fetch(`${ARTICLES_API}/api/articles`)
+        const response = await fetch(`${ARTICLES_API}/articles`)
         if (!response.ok) {
             throw new Error(`Failed to fetch article: ${response.statusText}`)
         }
@@ -21,7 +21,7 @@ export async function getAllArticles(): Promise<Article[]> {
 
 export async function getArticlesByCategory(cat_id: number): Promise<Article[]> {
     try {
-        const response = await fetch(`${ARTICLES_API}/api/articles?category_id=${cat_id}`)
+        const response = await fetch(`${ARTICLES_API}/articles?category_id=${cat_id}`)
         if (!response.ok) {
             throw new Error(`Failed to fetch article: ${response.statusText}`)
         }
@@ -35,7 +35,7 @@ export async function getArticlesByCategory(cat_id: number): Promise<Article[]> 
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
     try {
-        const response = await fetch(`${ARTICLES_API}/api/articles/slug/${slug}`)
+        const response = await fetch(`${ARTICLES_API}/articles/slug/${slug}`)
         if (!response.ok) {
             throw new Error(`Failed to fetch Article: ${response.statusText}`)
         }
@@ -50,7 +50,7 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 
 export async function getRelatedArticles(cat_id: number, currentSlug: string): Promise<Article[]> {
     try {
-        const response = await fetch(`${ARTICLES_API}/api/articles/related?category_id=${cat_id}&exclude_slug=${currentSlug}`)
+        const response = await fetch(`${ARTICLES_API}/articles/related?category_id=${cat_id}&exclude_slug=${currentSlug}`)
 
         if (!response.ok) {
             throw new Error(`Failed to fetch article: ${response.statusText}`)
@@ -64,7 +64,7 @@ export async function getRelatedArticles(cat_id: number, currentSlug: string): P
 }
 
 export async function updateArticle(payload: ArticlePayload): Promise<void> {
-    const response = await fetch(`${ARTICLES_API}/api/articles/${payload.slug}`, {
+    const response = await fetch(`${ARTICLES_API}/articles/${payload.slug}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -77,7 +77,7 @@ export async function updateArticle(payload: ArticlePayload): Promise<void> {
 }
 
 export async function createArticle(data: ArticleFormValues): Promise<void> {
-    const response = await fetch(`${ARTICLES_API}/api/articles`, {
+    const response = await fetch(`${ARTICLES_API}/articles`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -95,7 +95,7 @@ export async function deleteArticle(slug: string): Promise<void> {
         ...getAuthHeaders()
     };
 
-    const response = await fetch(`${ARTICLES_API}/api/articles/${slug}`, {
+    const response = await fetch(`${ARTICLES_API}/articles/${slug}`, {
         method: "DELETE",
         headers
     });
